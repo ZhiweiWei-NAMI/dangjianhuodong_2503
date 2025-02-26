@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>党支部成员民主评议</title>
+    <!-- 引入 Bootstrap 5 样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-bottom: 50px;
+        }
+        .header {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        .member-card {
+            border-left: 4px solid #dc3545;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .member-card.selected {
+            background-color: #f8d7da;
+            transform: scale(1.02);
+            border-left: 8px solid #dc3545;
+        }
+        .tag-badge {
+            margin: 5px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .tag-badge:hover {
+            transform: scale(1.05);
+        }
+        .assigned-tag {
+            margin: 2px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+        .btn-generate {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .btn-generate:hover {
+            background-color: #bb2d3b;
+            border-color: #bb2d3b;
+        }
+        .group-btn {
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .group-btn.active {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transform: scale(1.05);
+        }
+        /* 不同稀有度的标签颜色 */
+        .tag-金色 {
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(255, 215, 0, 0.5);
+        }
+        .tag-紫色 {
+            background-color: #9370db;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(147, 112, 219, 0.5);
+        }
+        .tag-绿色 {
+            background-color: #2e8b57;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(46, 139, 87, 0.5);
+        }
+        .tag-白色 {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 5px rgba(222, 226, 230, 0.5);
+        }
+        .record-section {
+            margin-top: 30px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .audio-container {
+            margin-top: 20px;
+        }
+        .record-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header text-center">
+        <div class="container">
+            <h1><i class="fas fa-star me-2"></i>党支部成员民主评议</h1>
+            <p class="mb-0">共建优良组织，共创美好未来</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 小组选择区域 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>小组选择</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-center" id="groupButtons">
+                            <!-- 小组按钮将在JS中生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成员展示和标签区域 -->
+        <div class="row">
+            <!-- 小组成员列表 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user-friends me-2"></i><span id="currentGroupName">小组成员</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="membersList" class="row">
+                            <!-- 成员卡片将在JS中生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 标签区域 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>标签分配</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-generate btn-lg mb-3" id="generateTags">
+                            <i class="fas fa-magic me-2"></i>生成标签
+                        </button>
+                        <div id="tagsPool" class="mb-4">
+                            <!-- 标签将在JS中生成 -->
+                            <p class="text-muted">点击"生成标签"按钮获取随机标签</p>
+                        </div>
+                        <div class="mb-3">
+                            <h5><i class="fas fa-info-circle me-2"></i>标签稀有度说明</h5>
+                            <div class="d-flex flex-wrap mt-2">
+                                <span class="tag-badge tag-金色 me-2">金色传说 (5%)</span>
+                                <span class="tag-badge tag-紫色 me-2">紫色稀有 (10%)</span>
+                                <span class="tag-badge tag-绿色 me-2">绿色超凡 (30%)</span>
+                                <span class="tag-badge tag-白色 me-2">白色普通 (55%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 录音评价区域 -->
+        <div class="record-section mt-4">
+            <h3 class="mb-3"><i class="fas fa-microphone me-2"></i>自我评议</h3>
+            <p>请进行自我评议，点击录音按钮开始，再次点击结束录音。</p>
+            
+            <div class="audio-container d-flex align-items-center">
+                <button id="recordButton" class="btn btn-danger record-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <div class="flex-grow-1">
+                    <div class="progress mb-2" style="height: 10px;">
+                        <div id="recordingProgress" class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <audio id="audioPlayback" controls class="w-100 mb-3"></audio>
+                    <button id="submitRecording" class="btn btn-info btn-lg"><i class="fas fa-paper-plane"></i> 提交录音</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 小组数据
+            // 葛蕾：孟璟陆，孙亦菲，王姝谕，陈一洋，雷扬，赵紫君，张唯琛 
+            // 从玉琪：王亮淇，李松泽，宋子阳，原笑阳，王旭飞，李紫萌 
+            // 范虹霖：沈卓成，罗浩鸣，王悦晖，张安琦，田宇潇，李天昊 
+            // 孙韩雅：刘潇，赵一婷，杨明月，陈雨彤，汪钟毓，王宇莹 
+            // 魏智伟：沙坚，傅佳恒，张艺博，张耀华，汤可娴，陈嘉瑞，王奕博
+            const groups = [
+                { 
+                    leader: "葛蕾", 
+                    members: ["孟璟陆", "孙亦菲", "王姝谕", "陈一洋", "雷扬", "赵紫君", "张唯琛"]
+                },
+                { 
+                    leader: "从玉琪",
+                    members: ["王亮淇", "李松泽", "宋子阳", "原笑阳", "王旭飞", "李紫萌"]
+                },
+                { 
+                    leader: "范虹霖",
+                    members: ["沈卓成", "罗浩鸣", "王悦晖", "张安琦", "田宇潇", "李天昊"]
+                },
+                { 
+                    leader: "孙韩雅",
+                    members: ["刘潇", "赵一婷", "杨明月", "陈雨彤", "汪钟毓", "王宇莹"]
+                },
+                {
+                    leader: "魏智伟",
+                    members: ["沙坚", "傅佳恒", "张艺博", "张耀华", "汤可娴", "陈嘉瑞", "王奕博"]
+                }
+            ];
+
+            // 当前选中的小组和成员
+            let currentGroup = null;
+            let selectedMember = null;
+            
+            // 渲染小组按钮
+            function renderGroupButtons() {
+                const groupButtonsContainer = document.getElementById('groupButtons');
+                groupButtonsContainer.innerHTML = '';
+                
+                groups.forEach(group => {
+                    const button = document.createElement('button');
+                    button.classList.add('btn', 'btn-outline-danger', 'btn-lg', 'group-btn');
+                    button.textContent = group.leader + '小组';
+                    button.addEventListener('click', () => selectGroup(group));
+                    groupButtonsContainer.appendChild(button);
+                });
+            }
+            
+            // 选择小组
+            function selectGroup(group) {
+                // 更新按钮状态
+                document.querySelectorAll('.group-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent === group.leader + '小组') {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                currentGroup = group;
+                document.getElementById('currentGroupName').textContent = group.leader + '小组成员';
+                selectedMember = null;
+                renderMembers();
+            }
+            
+            // 渲染成员列表
+            function renderMembers() {
+                const membersContainer = document.getElementById('membersList');
+                membersContainer.innerHTML = '';
+                
+                if (!currentGroup) return;
+                
+                // 添加组长
+                const leaderCard = createMemberCard(currentGroup.leader, true);
+                membersContainer.appendChild(leaderCard);
+                
+                // 添加组员
+                currentGroup.members.forEach(member => {
+                    const memberCard = createMemberCard(member, false);
+                    membersContainer.appendChild(memberCard);
+                });
+            }
+            
+            // 创建成员卡片
+            function createMemberCard(name, isLeader) {
+                const col = document.createElement('div');
+                col.classList.add('col-md-6', 'mb-3');
+                
+                const card = document.createElement('div');
+                card.classList.add('card', 'member-card');
+                card.dataset.name = name;
+                
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedMember = name;
+                });
+                
+                const cardBody = document.createElement('div');
+                cardBody.classList.add('card-body');
+                
+                const title = document.createElement('h5');
+                title.classList.add('card-title');
+                title.innerHTML = `${name} ${isLeader ? '<span class="badge bg-danger">组长</span>' : ''}`;
+                
+                const tagsContainer = document.createElement('div');
+                tagsContainer.classList.add('assigned-tags', 'mt-2');
+                tagsContainer.id = `tags-${name.replace(/\s+/g, '-')}`;
+                
+                cardBody.appendChild(title);
+                cardBody.appendChild(tagsContainer);
+                card.appendChild(cardBody);
+                col.appendChild(card);
+                
+                return col;
+            }
+            
+            // 生成标签
+            document.getElementById('generateTags').addEventListener('click', function() {
+                // 模拟从后端获取标签
+                fetch('/sample_tags?num_tags=20')
+                    .then(response => response.json())
+                    .then(tags => {
+                        renderTags(tags);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching tags:', error);
+                        // 使用模拟数据进行测试
+                        const mockTags = [
+                            {tag: "创新能力 (金色传说, 5%)", rarity: "金色"},
+                            {tag: "战略思维 (金色传说, 5%)", rarity: "金色"},
+                            {tag: "领导能力 (紫色稀有, 10%)", rarity: "紫色"},
+                            {tag: "决策能力 (紫色稀有, 10%)", rarity: "紫色"},
+                            {tag: "团队合作 (绿色超凡, 30%)", rarity: "绿色"},
+                            {tag: "执行力 (绿色超凡, 30%)", rarity: "绿色"},
+                            {tag: "责任感 (绿色超凡, 30%)", rarity: "绿色"},
+                            {tag: "沟通能力 (白色普通, 55%)", rarity: "白色"},
+                            {tag: "时间管理 (白色普通, 55%)", rarity: "白色"},
+                            {tag: "学习能力 (白色普通, 55%)", rarity: "白色"}
+                        ];
+                        renderTags(mockTags);
+                    });
+            });
+            
+            // 渲染标签
+            function renderTags(tags) {
+                const tagsContainer = document.getElementById('tagsPool');
+                tagsContainer.innerHTML = '';
+                
+                tags.forEach(tagData => {
+                    const tagElem = document.createElement('span');
+                    tagElem.classList.add('tag-badge', `tag-${tagData.rarity}`);
+                    tagElem.textContent = tagData.tag;
+                    tagElem.dataset.tag = tagData.tag;
+                    tagElem.dataset.rarity = tagData.rarity;
+                    
+                    tagElem.addEventListener('click', function() {
+                        if (selectedMember) {
+                            assignTagToMember(selectedMember, tagData);
+                            // 移除标签
+                            tagElem.remove();
+                        } else {
+                            alert('请先选择一名组员');
+                        }
+                    });
+                    
+                    tagsContainer.appendChild(tagElem);
+                });
+            }
+            
+            // 将标签分配给成员
+            function assignTagToMember(memberName, tagData) {
+                const memberTagsContainer = document.getElementById(`tags-${memberName.replace(/\s+/g, '-')}`);
+                
+                // 检查成员已经分配的标签数量
+                if (memberTagsContainer.children.length >= 2) {
+                    alert(`${memberName} 已经分配了2个标签，无法再添加更多`);
+                    return;
+                }
+                
+                const tagElem = document.createElement('span');
+                tagElem.classList.add('assigned-tag', `tag-${tagData.rarity}`);
+                tagElem.textContent = tagData.tag;
+                
+                memberTagsContainer.appendChild(tagElem);
+            }
+            
+            // 录音功能
+            const recordButton = document.getElementById('recordButton');
+            const audioPlayback = document.getElementById('audioPlayback');
+            const progressBar = document.getElementById('recordingProgress');
+            let mediaRecorder;
+            let chunks = [];
+            let isRecording = false;
+            let progressInterval;
+            
+            recordButton.addEventListener('click', toggleRecording);
+            
+            function toggleRecording() {
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            }
+            
+            function startRecording() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            mediaRecorder = new MediaRecorder(stream);
+                            mediaRecorder.start();
+                            isRecording = true;
+                            
+                            recordButton.innerHTML = '<i class="fas fa-stop"></i>';
+                            recordButton.classList.add('btn-warning');
+                            recordButton.classList.remove('btn-danger');
+                            
+                            chunks = [];
+                            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                            mediaRecorder.onstop = createAudioPreview;
+                            
+                            // 模拟进度条
+                            let progress = 0;
+                            progressBar.style.width = '0%';
+                            progressInterval = setInterval(() => {
+                                progress += 1;
+                                if (progress <= 100) {
+                                    progressBar.style.width = progress + '%';
+                                } else {
+                                    clearInterval(progressInterval);
+                                }
+                            }, 300);
+                        })
+                        .catch(err => {
+                            console.error('录音失败:', err);
+                            alert('无法访问麦克风，请检查浏览器权限设置。');
+                        });
+                } else {
+                    alert('您的浏览器不支持录音功能。');
+                }
+            }
+            
+            function stopRecording() {
+                if (mediaRecorder && isRecording) {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    
+                    recordButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                    recordButton.classList.add('btn-danger');
+                    recordButton.classList.remove('btn-warning');
+                    
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    
+                    // 关闭麦克风
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+            }
+            
+            function createAudioPreview() {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const audioURL = URL.createObjectURL(blob);
+                audioPlayback.src = audioURL;
+                audioPlayback.controls = true;
+            }
+            
+            // 提交录音
+            document.getElementById('submitRecording').addEventListener('click', function() {
+                if (chunks.length === 0) {
+                    alert('请先录制语音');
+                    return;
+                }
+                
+                if (!selectedMember) {
+                    alert('请选择一名组员进行评价');
+                    return;
+                }
+                
+                alert(`${selectedMember} 的语音评价已提交！`);
+                // 这里可以添加实际的提交逻辑
+            });
+            
+            // 初始化
+            renderGroupButtons();
+        });
+    </script>
+
+    <!-- 引入 Bootstrap 5 的 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+
