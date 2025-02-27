@@ -1,4 +1,5 @@
- 
+ ![1f0de76af535ac75b17a8d29939e1ca1_](https://github.com/user-attachments/assets/ae9b1a0b-9552-4901-a487-8aa998526a21)
+
 
 # 同济大学组织生活党建小程序项目说明文档
 
