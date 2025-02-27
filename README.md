@@ -112,7 +112,7 @@ party-building-app/
 
 1. 克隆代码库
 ```bash
-git clone [仓库地址]
+git clone git@github.com:ZhiweiWei-NAMI/dangjianhuodong_2503.git
 cd dangjianhuodong_2503
 ```
 
