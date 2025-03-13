@@ -1,12 +1,110 @@
-import openai
+from openai import OpenAI
+import os
+import json
+import time
 
-def evaluate_with_openai(text):
-    openai.api_key = 'YOUR_API_KEY'
+def evaluate_with_openai(name,tag,text):
+    # tag为一个列表，列表元素为tuple，每个tuple包含两个元素，第一个元素为标签，第二个元素标签等级
+    # 例如：[('创新能力', '金色传说'), ('情绪管理', '金色传说'), ('危机处理', '金色传说'), ('战略思维', '金色传说')]
 
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=f"请根据以下内容对与民主评议主题的吻合程度进行评分：\n{text}",
-        max_tokens=150
-    )
+    prompt = f"""
+请根据同济大学软件工程党组织生活会的要求，为{name}同志生成民主评议评价，严格按以下步骤执行：
 
-    return response.choices[0].text.strip()
+### 1. **深入分析自我评价内容**
+- 认真阅读{name}同志的自我评价内容：【{text}】  
+- 提取其中的核心观点、具体事例，并分析其与党员职责的关联性  
+- 重点识别展现党性修养、实践经验和团队贡献的内容  
+
+### 2. **匹配能力标签，评估内容契合度**
+- 结合所选能力标签（{tag}）进行精准匹配，并评估其在党员基本要求中的契合度：
+  - **金色传说标签**（核心党员素养，最高权重）：创新能力、情绪管理、危机处理、战略思维  
+  - **紫色稀有标签**（骨干党员能力，高权重）：领导能力、决策能力、资源优化、项目管理  
+  - **绿色超凡标签**（优秀党员素质，中等权重）：团队合作、工作效率、责任感、执行力  
+  - **白色普通标签**（基础党员要求，最低权重）：时间管理、自我改进、学习能力  
+- 具体分析{name}同志的自我评价内容与所选标签的契合度，并评估其在该能力类别中的表现与可提升空间  
+
+### 3. **评分规则（60-100）**
+- **基础评分标准**（不考虑标签权重时）：  
+  - **60-70**：内容与标签关联较弱，党员意识和党性修养有待加强  
+  - **71-85**：基本匹配但缺乏细节，需进一步提升党性修养或实践经验  
+  - **86-100**：内容详实且高度契合，充分展现党员先锋模范作用  
+- **额外加权规则**：  
+  - **金色传说标签**：+10 至 +15  
+  - **紫色稀有标签**：+5 至 +10  
+  - **绿色超凡标签**：+1 至 +5  
+  - **白色普通标签**：无额外加分，仅按基础评分计算  
+- 评分范围严格限制在**60-100**之间，若超出范围，则按100计算  
+
+### 4. **精准生成评价**
+- 评价内容必须：
+  1. 直接回应{name}同志的自我评价内容，结合具体事例进行分析  
+  2. 评估其能力表现与所选标签的契合度，指出优势和不足  
+  3. 结合党组织要求，评估其党性修养、团队协作、责任担当等方面的表现  
+  4. 提出针对性的改进建议，如如何在团队建设、科研攻关、组织工作等方面进一步提升  
+  5. 语言务实、具体，避免空泛表述和夸张修辞，符合党内评议风格 
+- 最后给出一句话锐评，突出其核心优劣点
+
+请返回严格遵循此格式的JSON，不要包含任何额外内容：  
+{{
+    "score": 基于评分标准和标签加权计算的最终评分,
+    "evaluation": "针对{name}同志的具体评价，确保内容与其自我评价高度相关，并结合党组织要求和实际实践提出改进建议",
+    "sharp_comment": "50字内犀利锐评，直接指出核心优缺点,语言可以尽量夸张有新意,语气不用太好" 
+}}
+"""
+
+    # 初始化 OpenAI 客户端
+    client = OpenAI(api_key="sk-435afd8054a941f5b8071fe5410c7f22", base_url="https://api.deepseek.com")
+    result={
+        "score": 0,
+        "evaluation": "评价生成错误"
+    }
+
+
+    max_retries = 6
+    retries = 1
+
+    while retries < max_retries:
+      try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            stream=False,
+            response_format={"type": "json_object"},
+            temperature = 1.0
+        )
+        # print(response.choices[0].message.content)
+
+        data = json.loads(response.choices[0].message.content)
+        result=data
+
+        data['name'] = name
+        data['tag'] = tag
+        data['text'] = text
+        
+        # data=json.loads(data)
+        # result=json.loads(result)
+        with open(f'./evaluation_result/{name}.json', 'w', encoding="utf-8") as json_file:
+            json.dump(data, json_file, indent=4,ensure_ascii=False)
+        print(f"【{name}】Result saved to./evaluation_result/{name}.json")
+        break
+
+      except Exception as e:
+        retries += 1
+        wait_time = 2 ** retries  
+        print(f"Error: 【{name}】Failed to connect to server. Retrying in {wait_time} seconds...")
+        time.sleep(wait_time) 
+
+    return result
+
+if __name__ == "__main__":
+    name1 = "张三"
+    tag1 = [('创新能力', '金色传说'), ('决策能力', '紫色稀有')]
+    
+    text1 = "在过去的一年里，我在学习、科研和组织工作方面不断提升自己，努力发挥党员的先锋模范作用。首先，在创新能力方面，我积极参与科研项目，尝试将前沿技术应用到实际问题中。我主导了一项关于智能漏洞修复的研究，提出了一种基于检索增强生成的补丁优化方法。该方法通过自动化分析历史漏洞修复案例，提高了漏洞修复的精准度。我在团队中发挥了关键作用，提出了改进策略，并推动项目取得了阶段性成果。此外，我还在学术活动中积极分享自己的研究心得，与同学们探讨技术难点，力求在创新方面贡献自己的力量。其次，在决策能力方面，我在党组织的实践活动中承担了重要职责。作为党支部的一员，我负责组织策划党员学习交流活动，确保活动的有序进行。在一次关于“软件工程专业学生如何发挥党员先锋作用”的讨论会上，我组织了案例分析环节，并引导同学们深入思考专业发展与党性修养的结合点。在团队协作和项目管理中，我也承担了较多决策任务，比如在科研项目中，合理分配任务、确定实验方向，并协调团队资源，以确保项目高效推进。当然，我也意识到自己在实践经验和理论结合方面仍有提升空间。今后，我希望进一步加强党性修养，将创新精神与党员的社会责任感更好地结合，提升自己在复杂环境下的决策能力，推动团队更高效地完成任务。"
+    name2 = "李四"
+    tag2 = [('团队合作', '绿色超凡'),('时间管理', '白色普通')]
+    text2 = "在过去的一年里，我认真完成了自己的学习任务，并积极参与了一些团队活动。在团队合作方面，我能够按照分配的任务完成自己的工作，并在需要时配合其他同学。在小组作业和实践活动中，我尽量与队友保持沟通，确保任务顺利推进。不过，有时候我更多地是执行安排，主动协调和组织工作的能力还有待加强。在时间管理方面，我尽量按时完成各项任务，避免拖延。我会制定一些简单的计划来安排学习和生活，但有时候计划执行得不够严格，导致效率不高。在处理多个任务时，也会出现时间安排不合理的情况。总体来说，我在团队合作和时间管理上还有很多可以改进的地方。今后，我希望能够更合理地规划时间，提高工作效率，同时在团队合作中发挥更积极的作用。"
+    evaluate_with_openai(name1,tag1,text1)
+    evaluate_with_openai(name2,tag2,text2)

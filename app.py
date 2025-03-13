@@ -12,7 +12,7 @@ def upload_audio():
         return jsonify({'error': 'No audio file uploaded'}), 400
 
     audio_file = request.files['audio']
-    audio_path = os.path.join('uploads', audio_file.filename)
+    audio_path = os.path.join('audio', audio_file.filename)
     audio_file.save(audio_path)
 
     text = process_audio(audio_path)
