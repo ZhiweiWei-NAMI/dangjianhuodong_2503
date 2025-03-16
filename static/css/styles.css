@@ -36,3 +36,28 @@ button {
 #recordingSection button {
     width: 100%;
 }
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    #tagsList li {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    #memberTags div span {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+}

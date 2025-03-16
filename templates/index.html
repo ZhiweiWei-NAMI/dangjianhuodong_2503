@@ -12,7 +12,9 @@
         body {
             background-color: #f8f9fa;
             padding-bottom: 50px;
+            font-family: 'Arial', sans-serif;
         }
+
         .header {
             background-color: #dc3545;
             color: white;
@@ -20,31 +22,37 @@
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .card {
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s, box-shadow 0.3s;
             border: none;
         }
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+
         .card-header {
             background-color: #dc3545;
             color: white;
             font-weight: bold;
         }
+
         .member-card {
             border-left: 4px solid #dc3545;
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .member-card.selected {
             background-color: #f8d7da;
             transform: scale(1.02);
             border-left: 8px solid #dc3545;
         }
+
         .tag-badge {
             margin: 5px;
             cursor: pointer;
@@ -54,9 +62,11 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
+
         .tag-badge:hover {
             transform: scale(1.05);
         }
+
         .assigned-tag {
             margin: 2px;
             padding: 5px 10px;
@@ -64,24 +74,29 @@
             display: inline-block;
             font-size: 0.8rem;
         }
+
         .btn-generate {
             background-color: #dc3545;
             border-color: #dc3545;
             margin-bottom: 20px;
         }
+
         .btn-generate:hover {
             background-color: #bb2d3b;
             border-color: #bb2d3b;
         }
+
         .group-btn {
             margin: 5px;
             transition: all 0.3s;
         }
+
         .group-btn.active {
             background-color: #dc3545;
             border-color: #dc3545;
             transform: scale(1.05);
         }
+
         /* 不同稀有度的标签颜色 */
         .tag-金色 {
             background-color: #ffd700;
@@ -89,24 +104,28 @@
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(255, 215, 0, 0.5);
         }
+
         .tag-紫色 {
             background-color: #9370db;
             color: white;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(147, 112, 219, 0.5);
         }
+
         .tag-绿色 {
             background-color: #2e8b57;
             color: white;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(46, 139, 87, 0.5);
         }
+
         .tag-白色 {
             background-color: #f8f9fa;
             color: #333;
             border: 1px solid #dee2e6;
             box-shadow: 0 2px 5px rgba(222, 226, 230, 0.5);
         }
+
         .record-section {
             margin-top: 30px;
             background-color: white;
@@ -114,14 +133,44 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
+
         .audio-container {
             margin-top: 20px;
         }
+
         .record-btn {
             width: 60px;
             height: 60px;
             border-radius: 50%;
             margin-right: 15px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .card-header {
+                font-size: 1rem;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .member-card {
+                margin-bottom: 15px;
+            }
+
+            .group-btn {
+                font-size: 0.9rem;
+            }
+
+            .record-section h3 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
