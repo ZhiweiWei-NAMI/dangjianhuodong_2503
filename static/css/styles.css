@@ -1,13 +1,160 @@
+/* 全局样式 */
 body {
     background-color: #f8f9fa;
+    padding-bottom: 50px;
+    font-family: 'Arial', sans-serif;
 }
 
-.container {
-    max-width: 800px;
+/* 头部样式 */
+.header {
+    background-color: #dc3545;
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 卡片样式 */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+}
+
+.card-header-voice {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+
+/* 成员卡片 */
+.member-card {
+    border-left: 4px solid #dc3545;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.member-card.selected {
+    background-color: #f8d7da;
+    transform: scale(1.02);
+    border-left: 8px solid #dc3545;
+}
+
+/* 标签样式 */
+.tag-badge {
+    margin: 5px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.tag-badge:hover {
+    transform: scale(1.05);
+}
+
+.assigned-tag {
+    margin: 2px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+    font-size: 0.8rem;
+}
+
+/* 按钮样式 */
+.btn-generate {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    margin-bottom: 20px;
+}
+
+.btn-generate:hover {
+    background-color: #bb2d3b;
+    border-color: #bb2d3b;
+}
+
+.group-btn {
+    margin: 5px;
+    transition: all 0.3s;
+}
+
+.group-btn.active {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: scale(1.05);
+}
+
+/* 不同稀有度标签颜色 */
+.tag-金色 {
+    background-color: #ffd700;
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.5);
+}
+
+.tag-紫色 {
+    background-color: #9370db;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(147, 112, 219, 0.5);
+}
+
+.tag-绿色 {
+    background-color: #2e8b57;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(46, 139, 87, 0.5);
+}
+
+.tag-白色 {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 5px rgba(222, 226, 230, 0.5);
+}
+
+/* 记录区样式 */
+.record-section {
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.record-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.audio-container {
+    margin-top: 20px;
+}
+
+.record-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
 }
 
 h1 {
-    color: #007bff;
+    color: #ffffff;
 }
 
 #tagsSection h3 {
@@ -37,25 +184,106 @@ button {
     width: 100%;
 }
 
+.custom-button {
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    margin-right: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.custom-button:hover {
+    transform: scale(1.05);
+}
+/* 自定义展示卡片样式 */
+.custom-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.custom-card .card-header {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
+.custom-card .card-body {
+    background-color: #fff;
+    padding: 20px;
+    min-height: 150px;
+    position: relative;
+}
+/* 加载中状态样式：居中转圈动画和文字 */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255,255,255,0.8);
+    z-index: 10;
+}
+
+.custom-button {
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    margin: 0 10px;
+    border: none;
+    color: #fff;
+}
+
+/* Evaluation 按钮：蓝紫混搭 */
+.btn-evaluation {
+    background: linear-gradient(45deg, #2575fc, #6a11cb);
+}
+
+/* Sharp Comment 按钮：深红和红色混搭 */
+.btn-sharpcomment {
+    background: linear-gradient(45deg, #8B0000, #FF0000);
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
+    /* 第一部分的响应式样式 */
+    .card-header {
+        font-size: 1rem;
+        text-align: center;
+    }
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    .header p {
+        font-size: 0.9rem;
+    }
+    .member-card {
+        margin-bottom: 15px;
+    }
+    .group-btn {
+        font-size: 0.9rem;
+    }
+    .record-section h3 {
+        font-size: 1.2rem;
+    }
+    /* 第二部分的响应式样式 */
     h1 {
         font-size: 1.5rem;
     }
-
     .container {
         padding: 10px;
     }
-
     #tagsList li {
         padding: 8px;
         font-size: 0.9rem;
     }
-
     #memberTags div span {
         font-size: 0.85rem;
         padding: 4px 8px;
     }
-
     button {
         padding: 10px;
         font-size: 0.95rem;

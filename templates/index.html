@@ -9,183 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- 引入 Font Awesome 图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-bottom: 50px;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .header {
-            background-color: #dc3545;
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #dc3545;
-            color: white;
-            font-weight: bold;
-        }
-
-        .card-header-voice {
-            background-color: #ffffff;
-            color: rgb(0, 0, 0);
-            font-weight: bold;
-        }
-
-        .member-card {
-            border-left: 4px solid #dc3545;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .member-card.selected {
-            background-color: #f8d7da;
-            transform: scale(1.02);
-            border-left: 8px solid #dc3545;
-        }
-
-        .tag-badge {
-            margin: 5px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .tag-badge:hover {
-            transform: scale(1.05);
-        }
-
-        .assigned-tag {
-            margin: 2px;
-            padding: 5px 10px;
-            border-radius: 15px;
-            display: inline-block;
-            font-size: 0.8rem;
-        }
-
-        .btn-generate {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            margin-bottom: 20px;
-        }
-
-        .btn-generate:hover {
-            background-color: #bb2d3b;
-            border-color: #bb2d3b;
-        }
-
-        .group-btn {
-            margin: 5px;
-            transition: all 0.3s;
-        }
-
-        .group-btn.active {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            transform: scale(1.05);
-        }
-
-        /* 不同稀有度的标签颜色 */
-        .tag-金色 {
-            background-color: #ffd700;
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(255, 215, 0, 0.5);
-        }
-
-        .tag-紫色 {
-            background-color: #9370db;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(147, 112, 219, 0.5);
-        }
-
-        .tag-绿色 {
-            background-color: #2e8b57;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(46, 139, 87, 0.5);
-        }
-
-        .tag-白色 {
-            background-color: #f8f9fa;
-            color: #333;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 2px 5px rgba(222, 226, 230, 0.5);
-        }
-
-        .record-section {
-            margin-top: 30px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .record-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .audio-container {
-            margin-top: 20px;
-        }
-
-        .record-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .card-header {
-                font-size: 1rem;
-                text-align: center;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .header p {
-                font-size: 0.9rem;
-            }
-
-            .member-card {
-                margin-bottom: 15px;
-            }
-
-            .group-btn {
-                font-size: 0.9rem;
-            }
-
-            .record-section h3 {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
+    <!-- 引入 外部 css文件 -->
+    <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 </head>
 
 <body>
@@ -281,16 +106,33 @@
             </div>
         </div>
 
-        <!-- 生成评价区域 -->
+        <!-- 评价展示区域 -->
         <div class="record-section mt-4">
             <div class="card-header-voice">
                 <h5 class="mb-3"><i class="fa-regular fa-thumbs-up"></i> 评价展示</h5>
             </div>
-            <!-- 评价内容 -->
-            <div class="card-body-voice">
-                <p>评价如下：</p>
-                <div id="evaluation-container" class="evaluation-box">
-                    <!-- 动态生成的评价项将显示在这里 -->
+            <!-- 控制按钮 -->
+            <div class="mb-3 d-flex justify-content-center">
+                <button id="loadEvaluation" class="btn custom-button btn-evaluation">显示 Evaluation</button>
+                <button id="loadSharpComment" class="btn custom-button btn-sharpcomment">显示 Sharp Comment</button>
+            </div>
+            <!-- 展示框：采用卡片风格，两列布局 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card custom-card">
+                        <div class="card-header">Evaluation</div>
+                        <div class="card-body" id="evaluation-box">
+                            <!-- Evaluation 内容显示区 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card custom-card">
+                        <div class="card-header">Sharp Comment</div>
+                        <div class="card-body" id="sharp-comment-box">
+                            <!-- Sharp Comment 内容显示区 -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -563,6 +405,7 @@
                 audioPlayback.controls = true;
             }
 
+            let evaluationData = ""
             // 提交录音
             document.getElementById('submitRecording').addEventListener('click', function () {
                 if (chunks.length === 0) {
@@ -575,8 +418,35 @@
                     return;
                 }
 
-                alert(`${selectedMember} 的语音评价已提交！`);
                 // 这里可以添加实际的提交逻辑
+                mediaRecorder.stop();
+                // document.getElementById('startRecording').textContent = '开始录音';
+                // document.getElementById('startRecording').classList.remove('btn-warning');
+                // document.getElementById('startRecording').disabled = false;
+                document.getElementById('submitRecording').disabled = true;
+
+                // 使用 FormData 发送音频数据
+                const formData = new FormData();
+                formData.append('audio', new Blob(chunks, { type: 'audio/wav' }));
+                formData.append('');
+
+                fetch('/upload_audio', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Text:', data.text);
+                    console.log('Evaluation:', data.evaluation);
+                    //evaluation
+                    evaluationData = data.evaluation;
+                })
+                .catch(error => {
+                    console.error('上传失败:', error);
+                    alert('提交录音时出错，请重试。');
+                });
+
+                alert(`${selectedMember} 的语音评价已提交！`);
             });
 
             // 初始化
@@ -601,7 +471,7 @@
             // 将评价数据动态渲染到页面中
             const evaluationContainer = document.getElementById('evaluation-container');
 
-            evaluations.forEach((evaluation) => {
+            evaluationData.forEach((evaluation) => {
                 const evaluationItem = document.createElement('div');
                 evaluationItem.classList.add('evaluation-item');
 
