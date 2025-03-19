@@ -31,8 +31,8 @@ def upload_audio1():
 
     text = process_audio(audio_path)
     evaluation = evaluate_with_openai(name,tag,text)
-
-    return jsonify({evaluation})
+    print(evaluation)
+    return jsonify(evaluation)
 
 # 定义标签分类及其对应的稀有度
 tags = {
@@ -52,18 +52,31 @@ probabilities = {
 
 @app.route('/sample_tags', methods=['GET'])
 def sample_tags():
-    num_tags = int(request.args.get('num_tags', 10))  # 从请求中获取标签数量，默认为10
+    num_tags = int(request.args.get('num_tags', 10))
     sampled_tags = []
-    for _ in range(num_tags):
-        # 根据稀有度进行分类采样，不允许重复，要设置replace=False
-        rarity = random.choices(list(tags.keys()), weights=probabilities.values(), k=1)[0]
-        rarity_key = rarity[:-2]  # 去掉“传说”、“稀有”、“超凡”、“普通”字样
-        tag = random.choice(tags[rarity])
-        # 添加颜色和概率 (%)
-        tag = f"{tag} ({rarity}, {int(probabilities[rarity]*100)}%)"
-        sampled_tags.append({"tag": tag, "rarity": rarity_key})  # 返回的标签包含tag和rarity字段
+    # 复制 tags 字典，避免修改原始数据
+    available_tags = {rarity: list(t_list) for rarity, t_list in tags.items()}
     
-    return jsonify(sampled_tags)  # 返回JSON格式的标签数据
+    while len(sampled_tags) < num_tags:
+        # 根据当前可选稀有度标签的权重采样
+        rarities = list(available_tags.keys())
+        # 如果某个稀有度下已经没有标签了，可以将其权重置为 0 或从列表中移除
+        weights = [probabilities[r] if available_tags[r] else 0 for r in rarities]
+        if sum(weights) == 0:
+            break  # 当所有稀有度下均无可用标签时退出循环
+        rarity = random.choices(rarities, weights=weights, k=1)[0]
+        
+        # 从该稀有度列表中随机选择一个标签，并移除该标签
+        tag = random.choice(available_tags[rarity])
+        available_tags[rarity].remove(tag)
+        
+        rarity_key = rarity[:-2]  # 去掉“传说”、“稀有”、“超凡”、“普通”字样
+        tag_str = f"{tag} ({rarity}, {int(probabilities[rarity]*100)}%)"
+        sampled_tags.append({"tag": tag_str, "rarity": rarity_key})
+    
+    return jsonify(sampled_tags)
+
+
 
 @app.route('/')
 def index():
