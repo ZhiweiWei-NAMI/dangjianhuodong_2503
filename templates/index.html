@@ -325,6 +325,37 @@
                 memberTagsContainer.appendChild(tagElem);
             }
 
+            function getMemberTags(memberName) {
+                // 根据成员名称获取标签容器
+                const memberTagsContainer = document.getElementById(`tags-${memberName.replace(/\s+/g, '-')}`);
+                if (!memberTagsContainer) {
+                    console.error(`找不到 ${memberName} 的标签容器`);
+                    return [];
+                }
+                // 遍历所有子元素，解析文本内容，生成二元组： [tagName, rarityString]
+                const tags = Array.from(memberTagsContainer.children).map(tagElem => {
+                    const fullText = tagElem.textContent.trim();
+                    let tagName = fullText;
+                    let rarityString = "";
+                    // 如果包含括号，则解析括号前的内容为标签名称，括号内逗号前的为稀有度
+                    if (fullText.indexOf("(") !== -1) {
+                        tagName = fullText.substring(0, fullText.indexOf("(")).trim();
+                        const start = fullText.indexOf("(") + 1;
+                        const commaIndex = fullText.indexOf(",", start);
+                        if (commaIndex !== -1) {
+                            rarityString = fullText.substring(start, commaIndex).trim();
+                        } else {
+                            // 如果没有逗号，则取括号内全部内容
+                            rarityString = fullText.substring(start, fullText.indexOf(")")).trim();
+                        }
+                    }
+                    return [tagName, rarityString];
+                });
+                return tags;
+            }
+
+
+
             // 录音功能
             const recordButton = document.getElementById('recordButton');
             const audioPlayback = document.getElementById('audioPlayback');
@@ -401,6 +432,7 @@
             function createAudioPreview() {
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 const audioURL = URL.createObjectURL(blob);
+                console.log(audioURL)
                 audioPlayback.src = audioURL;
                 audioPlayback.controls = true;
             }
@@ -426,9 +458,15 @@
                 document.getElementById('submitRecording').disabled = true;
 
                 // 使用 FormData 发送音频数据
-                const formData = new FormData();
-                formData.append('audio', new Blob(chunks, { type: 'audio/wav' }));
-                formData.append('');
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const audioURL = URL.createObjectURL(blob);
+                const tags = getMemberTags(selectedMember);
+                console.log(tags);
+                let formData = new FormData() 
+                //formData.append('audio', new Blob(chunks, { type: 'audio/wav' }));
+                formData.append('audio_path', audioURL)
+                formData.append('tag', tags);
+                formData.append('name',selectedMember)
 
                 fetch('/upload_audio', {
                     method: 'POST',
