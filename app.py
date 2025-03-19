@@ -12,11 +12,14 @@ def upload_audio():
         return jsonify({'error': 'No audio file uploaded'}), 400
 
     audio_file = request.files['audio']
+    name = request.form.get('name')
+    tag = request.form.get('tag')
+
     audio_path = os.path.join('audio', audio_file.filename)
     audio_file.save(audio_path)
 
     text = process_audio(audio_path)
-    evaluation = evaluate_with_openai(text)
+    evaluation = evaluate_with_openai(name,tag,text)
 
     return jsonify({'text': text, 'evaluation': evaluation})
 
