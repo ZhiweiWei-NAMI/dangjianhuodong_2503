@@ -86,7 +86,7 @@
         <!-- 录音评价区域 -->
         <div class="record-section mt-4">
             <div class="card-header-voice">
-                <h5 class="mb-3"><i class="fas fa-microphone me-2"></i>自我评议</h5>
+                <h5 class="mb-3"><i class="fas fa-microphone me-2::before"></i>&nbsp;&nbsp;自我评议</h5>
             </div>
             <p>请进行自我评议，点击录音按钮开始，再次点击结束录音。</p>
 
@@ -109,27 +109,35 @@
         <!-- 评价展示区域 -->
         <div class="record-section mt-4">
             <div class="card-header-voice">
-                <h5 class="mb-3"><i class="fa-regular fa-thumbs-up"></i> 评价展示</h5>
+                <h5 class="mb-3"><i class="fa-regular fa-thumbs-up"></i>&nbsp;&nbsp;评价展示</h5>
             </div>
             <!-- 控制按钮 -->
-            <div class="mb-3 d-flex justify-content-center">
-                <button id="loadEvaluation" class="btn custom-button btn-evaluation">显示 Evaluation</button>
-                <button id="loadSharpComment" class="btn custom-button btn-sharpcomment">显示 Sharp Comment</button>
+            <div class="evaluation-section__controls mb-3 d-flex justify-content-center">
+                <button id="evaluation-section__btn--evaluation" class="evaluation-section__btn btn">
+                    👼点击生成温馨版评论👼
+                </button>
+                <button id="evaluation-section__btn--sharp-comment" class="evaluation-section__btn btn">
+                    😈点击生成辛辣版评论😈
+                </button>
             </div>
             <!-- 展示框：采用卡片风格，两列布局 -->
-            <div class="row">
+            <div class="evaluation-section__cards row">
                 <div class="col-md-6">
-                    <div class="card custom-card">
-                        <div class="card-header">Evaluation</div>
-                        <div class="card-body" id="evaluation-box">
+                    <div class="evaluation-section__card card">
+                        <div class="evaluation-section__card-header card-header">
+                            温馨版评论
+                        </div>
+                        <div class="evaluation-section__card-body card-body" id="evaluation-box">
                             <!-- Evaluation 内容显示区 -->
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card custom-card">
-                        <div class="card-header">Sharp Comment</div>
-                        <div class="card-body" id="sharp-comment-box">
+                    <div class="evaluation-section__card card">
+                        <div class="evaluation-section__card-header card-header">
+                            辛辣版评论
+                        </div>
+                        <div class="evaluation-section__card-body card-body" id="sharp-comment-box">
                             <!-- Sharp Comment 内容显示区 -->
                         </div>
                     </div>
@@ -138,396 +146,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // 小组数据
-            // 葛蕾：孟璟陆，孙亦菲，王姝谕，陈一洋，雷扬，赵紫君，张唯琛 
-            // 从玉琪：王亮淇，李松泽，宋子阳，原笑阳，王旭飞，李紫萌 
-            // 范虹霖：沈卓成，罗浩鸣，王悦晖，张安琦，田宇潇，李天昊 
-            // 孙韩雅：刘潇，赵一婷，杨明月，陈雨彤，汪钟毓，王宇莹 
-            // 魏智伟：沙坚，傅佳恒，张艺博，张耀华，汤可娴，陈嘉瑞，王奕博
-            const groups = [
-                {
-                    leader: "葛蕾",
-                    members: ["孟璟陆", "孙亦菲", "王姝谕", "陈一洋", "雷扬", "赵紫君", "张唯琛"]
-                },
-                {
-                    leader: "从玉琪",
-                    members: ["王亮淇", "李松泽", "宋子阳", "原笑阳", "王旭飞", "李紫萌"]
-                },
-                {
-                    leader: "范虹霖",
-                    members: ["沈卓成", "罗浩鸣", "王悦晖", "张安琦", "田宇潇", "李天昊"]
-                },
-                {
-                    leader: "孙韩雅",
-                    members: ["刘潇", "赵一婷", "杨明月", "陈雨彤", "汪钟毓", "王宇莹"]
-                },
-                {
-                    leader: "魏智伟",
-                    members: ["沙坚", "傅佳恒", "张艺博", "张耀华", "汤可娴", "陈嘉瑞", "王奕博"]
-                }
-            ];
-
-            // 当前选中的小组和成员
-            let currentGroup = null;
-            let selectedMember = null;
-
-            // 渲染小组按钮
-            function renderGroupButtons() {
-                const groupButtonsContainer = document.getElementById('groupButtons');
-                groupButtonsContainer.innerHTML = '';
-
-                groups.forEach(group => {
-                    const button = document.createElement('button');
-                    button.classList.add('btn', 'btn-outline-danger', 'btn-lg', 'group-btn');
-                    button.textContent = group.leader + '小组';
-                    button.addEventListener('click', () => selectGroup(group));
-                    groupButtonsContainer.appendChild(button);
-                });
-            }
-
-            // 选择小组
-            function selectGroup(group) {
-                // 更新按钮状态
-                document.querySelectorAll('.group-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.textContent === group.leader + '小组') {
-                        btn.classList.add('active');
-                    }
-                });
-
-                currentGroup = group;
-                document.getElementById('currentGroupName').textContent = group.leader + '小组成员';
-                selectedMember = null;
-                renderMembers();
-            }
-
-            // 渲染成员列表
-            function renderMembers() {
-                const membersContainer = document.getElementById('membersList');
-                membersContainer.innerHTML = '';
-
-                if (!currentGroup) return;
-
-                // 添加组长
-                const leaderCard = createMemberCard(currentGroup.leader, true);
-                membersContainer.appendChild(leaderCard);
-
-                // 添加组员
-                currentGroup.members.forEach(member => {
-                    const memberCard = createMemberCard(member, false);
-                    membersContainer.appendChild(memberCard);
-                });
-            }
-
-            // 创建成员卡片
-            function createMemberCard(name, isLeader) {
-                const col = document.createElement('div');
-                col.classList.add('col-md-6', 'mb-3');
-
-                const card = document.createElement('div');
-                card.classList.add('card', 'member-card');
-                card.dataset.name = name;
-
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    selectedMember = name;
-                });
-
-                const cardBody = document.createElement('div');
-                cardBody.classList.add('card-body');
-
-                const title = document.createElement('h5');
-                title.classList.add('card-title');
-                title.innerHTML = `${name} ${isLeader ? '<span class="badge bg-danger">组长</span>' : ''}`;
-
-                const tagsContainer = document.createElement('div');
-                tagsContainer.classList.add('assigned-tags', 'mt-2');
-                tagsContainer.id = `tags-${name.replace(/\s+/g, '-')}`;
-
-                cardBody.appendChild(title);
-                cardBody.appendChild(tagsContainer);
-                card.appendChild(cardBody);
-                col.appendChild(card);
-
-                return col;
-            }
-
-            // 生成标签
-            document.getElementById('generateTags').addEventListener('click', function () {
-                // 模拟从后端获取标签
-                fetch('/sample_tags?num_tags=20')
-                    .then(response => response.json())
-                    .then(tags => {
-                        renderTags(tags);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching tags:', error);
-                        // 使用模拟数据进行测试
-                        const mockTags = [
-                            { tag: "创新能力 (金色传说, 5%)", rarity: "金色" },
-                            { tag: "战略思维 (金色传说, 5%)", rarity: "金色" },
-                            { tag: "领导能力 (紫色稀有, 10%)", rarity: "紫色" },
-                            { tag: "决策能力 (紫色稀有, 10%)", rarity: "紫色" },
-                            { tag: "团队合作 (绿色超凡, 30%)", rarity: "绿色" },
-                            { tag: "执行力 (绿色超凡, 30%)", rarity: "绿色" },
-                            { tag: "责任感 (绿色超凡, 30%)", rarity: "绿色" },
-                            { tag: "沟通能力 (白色普通, 55%)", rarity: "白色" },
-                            { tag: "时间管理 (白色普通, 55%)", rarity: "白色" },
-                            { tag: "学习能力 (白色普通, 55%)", rarity: "白色" }
-                        ];
-                        renderTags(mockTags);
-                    });
-            });
-
-            // 渲染标签
-            function renderTags(tags) {
-                const tagsContainer = document.getElementById('tagsPool');
-                tagsContainer.innerHTML = '';
-
-                tags.forEach(tagData => {
-                    const tagElem = document.createElement('span');
-                    tagElem.classList.add('tag-badge', `tag-${tagData.rarity}`);
-                    tagElem.textContent = tagData.tag;
-                    tagElem.dataset.tag = tagData.tag;
-                    tagElem.dataset.rarity = tagData.rarity;
-
-                    tagElem.addEventListener('click', function () {
-                        if (selectedMember) {
-                            assignTagToMember(selectedMember, tagData);
-                            // 移除标签
-                            tagElem.remove();
-                        } else {
-                            alert('请先选择一名组员');
-                        }
-                    });
-
-                    tagsContainer.appendChild(tagElem);
-                });
-            }
-
-            // 将标签分配给成员
-            function assignTagToMember(memberName, tagData) {
-                const memberTagsContainer = document.getElementById(`tags-${memberName.replace(/\s+/g, '-')}`);
-
-                // 检查成员已经分配的标签数量
-                if (memberTagsContainer.children.length >= 2) {
-                    alert(`${memberName} 已经分配了2个标签，无法再添加更多`);
-                    return;
-                }
-
-                const tagElem = document.createElement('span');
-                tagElem.classList.add('assigned-tag', `tag-${tagData.rarity}`);
-                tagElem.textContent = tagData.tag;
-
-                memberTagsContainer.appendChild(tagElem);
-            }
-
-            function getMemberTags(memberName) {
-                // 根据成员名称获取标签容器
-                const memberTagsContainer = document.getElementById(`tags-${memberName.replace(/\s+/g, '-')}`);
-                if (!memberTagsContainer) {
-                    console.error(`找不到 ${memberName} 的标签容器`);
-                    return [];
-                }
-                // 遍历所有子元素，解析文本内容，生成二元组： [tagName, rarityString]
-                const tags = Array.from(memberTagsContainer.children).map(tagElem => {
-                    const fullText = tagElem.textContent.trim();
-                    let tagName = fullText;
-                    let rarityString = "";
-                    // 如果包含括号，则解析括号前的内容为标签名称，括号内逗号前的为稀有度
-                    if (fullText.indexOf("(") !== -1) {
-                        tagName = fullText.substring(0, fullText.indexOf("(")).trim();
-                        const start = fullText.indexOf("(") + 1;
-                        const commaIndex = fullText.indexOf(",", start);
-                        if (commaIndex !== -1) {
-                            rarityString = fullText.substring(start, commaIndex).trim();
-                        } else {
-                            // 如果没有逗号，则取括号内全部内容
-                            rarityString = fullText.substring(start, fullText.indexOf(")")).trim();
-                        }
-                    }
-                    return [tagName, rarityString];
-                });
-                return tags;
-            }
-
-
-
-            // 录音功能
-            const recordButton = document.getElementById('recordButton');
-            const audioPlayback = document.getElementById('audioPlayback');
-            const progressBar = document.getElementById('recordingProgress');
-            let mediaRecorder;
-            let chunks = [];
-            let isRecording = false;
-            let progressInterval;
-
-            recordButton.addEventListener('click', toggleRecording);
-
-            function toggleRecording() {
-                if (isRecording) {
-                    stopRecording();
-                } else {
-                    startRecording();
-                }
-            }
-
-            function startRecording() {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({ audio: true })
-                        .then(stream => {
-                            mediaRecorder = new MediaRecorder(stream);
-                            mediaRecorder.start();
-                            isRecording = true;
-
-                            recordButton.innerHTML = '<i class="fas fa-stop"></i>';
-                            recordButton.classList.add('btn-warning');
-                            recordButton.classList.remove('btn-danger');
-
-                            chunks = [];
-                            mediaRecorder.ondataavailable = e => chunks.push(e.data);
-                            mediaRecorder.onstop = createAudioPreview;
-
-                            // 模拟进度条
-                            let progress = 0;
-                            progressBar.style.width = '0%';
-                            progressInterval = setInterval(() => {
-                                progress += 1;
-                                if (progress <= 100) {
-                                    progressBar.style.width = progress + '%';
-                                } else {
-                                    clearInterval(progressInterval);
-                                }
-                            }, 300);
-                        })
-                        .catch(err => {
-                            console.error('录音失败:', err);
-                            alert('无法访问麦克风，请检查浏览器权限设置。');
-                        });
-                } else {
-                    alert('您的浏览器不支持录音功能。');
-                }
-            }
-
-            function stopRecording() {
-                if (mediaRecorder && isRecording) {
-                    mediaRecorder.stop();
-                    isRecording = false;
-
-                    recordButton.innerHTML = '<i class="fas fa-microphone"></i>';
-                    recordButton.classList.add('btn-danger');
-                    recordButton.classList.remove('btn-warning');
-
-                    clearInterval(progressInterval);
-                    progressBar.style.width = '100%';
-
-                    // 关闭麦克风
-                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                }
-            }
-
-            function createAudioPreview() {
-                const blob = new Blob(chunks, { type: 'audio/webm' });
-                const audioURL = URL.createObjectURL(blob);
-                console.log(audioURL)
-                audioPlayback.src = audioURL;
-                audioPlayback.controls = true;
-            }
-
-            let evaluationData = ""
-            // 提交录音
-            document.getElementById('submitRecording').addEventListener('click', function () {
-                if (chunks.length === 0) {
-                    alert('请先录制语音');
-                    return;
-                }
-
-                if (!selectedMember) {
-                    alert('请选择一名组员进行评价');
-                    return;
-                }
-
-                // 这里可以添加实际的提交逻辑
-                mediaRecorder.stop();
-                // document.getElementById('startRecording').textContent = '开始录音';
-                // document.getElementById('startRecording').classList.remove('btn-warning');
-                // document.getElementById('startRecording').disabled = false;
-                document.getElementById('submitRecording').disabled = true;
-
-                // 使用 FormData 发送音频数据
-                const blob = new Blob(chunks, { type: 'audio/webm' });
-                const audioURL = URL.createObjectURL(blob);
-                const tags = getMemberTags(selectedMember);
-                console.log(tags);
-                let formData = new FormData() 
-                //formData.append('audio', new Blob(chunks, { type: 'audio/wav' }));
-                formData.append('audio_path', audioURL)
-                formData.append('tag', tags);
-                formData.append('name',selectedMember)
-
-                fetch('/upload_audio', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Text:', data.text);
-                    console.log('Evaluation:', data.evaluation);
-                    //evaluation
-                    evaluationData = data.evaluation;
-                })
-                .catch(error => {
-                    console.error('上传失败:', error);
-                    alert('提交录音时出错，请重试。');
-                });
-
-                alert(`${selectedMember} 的语音评价已提交！`);
-            });
-
-            // 初始化
-            renderGroupButtons();
-
-            //内容需要根据大模型接口反馈的内容进行调整
-            const evaluations = [
-                {
-                    icon: "fa-star",
-                    text: "该模型的表现非常优秀，输出结果准确且响应快速。" //***********
-                },
-                {
-                    icon: "fa-check-circle",
-                    text: "整体体验很好，用户界面友好，使用流畅。" //***************
-                },
-                {
-                    icon: "fa-thumbs-up",
-                    text: "模型推荐度高，值得信赖，适合各种场景。" //************
-                }
-            ];
-
-            // 将评价数据动态渲染到页面中
-            const evaluationContainer = document.getElementById('evaluation-container');
-
-            evaluationData.forEach((evaluation) => {
-                const evaluationItem = document.createElement('div');
-                evaluationItem.classList.add('evaluation-item');
-
-                const evaluationIcon = document.createElement('div');
-                evaluationIcon.classList.add('evaluation-icon');
-                evaluationIcon.innerHTML = `<i class="fa-solid ${evaluation.icon}"></i>`;
-
-                const evaluationText = document.createElement('div');
-                evaluationText.classList.add('evaluation-text');
-                evaluationText.innerHTML = `<p>${evaluation.text}</p>`;
-
-                evaluationItem.appendChild(evaluationIcon);
-                evaluationItem.appendChild(evaluationText);
-
-                evaluationContainer.appendChild(evaluationItem);
-            });
-        });
-    </script>
+    <script src="../static/js/scripts.js"></script>
 
     <!-- 引入 Bootstrap 5 的 JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
