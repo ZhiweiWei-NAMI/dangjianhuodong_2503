@@ -77,7 +77,6 @@ def evaluate_with_openai(name,tag,text):
         # print(response.choices[0].message.content)
 
         data = json.loads(response.choices[0].message.content)
-        result=data
 
         data['name'] = name
         data['tag'] = tag
@@ -96,7 +95,7 @@ def evaluate_with_openai(name,tag,text):
         print(f"Error: 【{name}】Failed to connect to server. Retrying in {wait_time} seconds...")
         time.sleep(wait_time) 
 
-    return result
+    return data
 
 if __name__ == "__main__":
     name1 = "张三"

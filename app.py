@@ -8,20 +8,16 @@ app = Flask(__name__)
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file uploaded'}), 400
-
-    audio_file = request.files['audio']
+    
+    audio_path = request.form.get('audio_path')
     name = request.form.get('name')
-    tag = request.form.get('tag')
-
-    audio_path = os.path.join('audio', audio_file.filename)
-    audio_file.save(audio_path)
+    tag = request.form.get('tag') # [('创新能力', '金色传说'), ('决策能力', '紫色稀有')]
+    
 
     text = process_audio(audio_path)
     evaluation = evaluate_with_openai(name,tag,text)
 
-    return jsonify({'text': text, 'evaluation': evaluation})
+    return jsonify({evaluation})
 
 # 定义标签分类及其对应的稀有度
 tags = {
