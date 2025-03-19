@@ -19,6 +19,21 @@ def upload_audio():
 
     return jsonify({evaluation})
 
+@app.route('/upload_audio1', methods=['POST'])
+def upload_audio1():
+    audio_file = request.files['audio']
+    audio_path = os.path.join('./audio', audio_file.filename)
+    audio_file.save(audio_path)
+    
+    name = request.form.get('name')
+    tag = request.form.get('tag') # [('创新能力', '金色传说'), ('决策能力', '紫色稀有')]
+    
+
+    text = process_audio(audio_path)
+    evaluation = evaluate_with_openai(name,tag,text)
+
+    return jsonify({evaluation})
+
 # 定义标签分类及其对应的稀有度
 tags = {
     "金色传说": ['创新能力', '情绪管理', '危机处理', '战略思维'],
