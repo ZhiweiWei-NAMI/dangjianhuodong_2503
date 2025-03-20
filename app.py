@@ -22,7 +22,7 @@ def upload_audio():
 @app.route('/upload_audio1', methods=['POST'])
 def upload_audio1():
     audio_file = request.files['audio']
-    audio_path = os.path.join('./audio', audio_file.filename)
+    audio_path = os.path.join('./audio', request.form.get('name') )
     audio_file.save(audio_path)
     
     name = request.form.get('name')
